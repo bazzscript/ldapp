@@ -1,8 +1,13 @@
-# ldapp
+# Project: ldapp
 
 A new Flutter Desktop project.
 
 # Owner : Curtis
+
+
+Repository:
+
+[https://github.com/bazzscript/ldapp]: # Repository:
 
 ## Getting Started
 
@@ -32,6 +37,7 @@ After you have installed Flutter, you can run this project by opening the projec
 
 And Run the Folloing Command in the following Order
 
+0- flutter clean
 1- flutter pub get
 2- flutter packages pub run build_runner build --delete-conflicting-outputs
 3- flutter run -d windows | flutter run -d macos | flutter run -d linux
