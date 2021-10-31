@@ -10,6 +10,7 @@ class EnterContestantsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //Function To Get List Of Contestants
     context.watch<Contestant>().getContestingList();
     return Consumer<Contestant>(
       builder: (context, model, child) {
