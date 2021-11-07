@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:ldapp/models/contestant.dart';
+
+import 'package:ldapp/models/contestant/contestant.dart';
+import 'package:ldapp/models/game/game.dart';
+import 'package:ldapp/screens/home_screen/home_screen.dart';
+import 'package:ldapp/screens/leaderboard_screen/leaderboard_screen.dart';
+
 import 'package:ldapp/utils/svg_codes.dart';
 import 'package:ldapp/widgets/custom_button.dart';
 import 'package:ldapp/widgets/custom_text_styles.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class HeaderButtons extends StatelessWidget {
@@ -16,79 +22,80 @@ class HeaderButtons extends StatelessWidget {
     // String action,
     // [int? index]
   ) {
-    var contestantDb = Provider.of<Contestant>(context, listen: false);
     showDialog(
         context: context,
         barrierLabel: 'ADD NEW CONTESTANT',
         builder: (context) {
-          return Dialog(
-            child: Container(
-              // height: 300,
-              width: 400,
-              padding: const EdgeInsets.all(20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    //TextField To Enter Contestant Name
-                    TextFormField(
-                      style: bodyTextStyle(),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      controller: _nameController,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter a name';
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Enter Contestant Name',
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              await contestantDb.addNewContestant(
-                                //Adds New Contestant To the hive Database
-                                Contestant(
-                                  name: _nameController!.text,
-                                ),
-                              );
-
-                              _nameController!.clear();
-
-                              Navigator.pop(context);
-                            }
-                          },
-                          icon: const Icon(Icons.check),
-                          iconSize: 25,
-                          color: Colors.green,
-                          splashColor: Colors.greenAccent,
+          return Consumer<Game>(builder: (context, model, child) {
+            return Dialog(
+              child: Container(
+                // height: 300,
+                width: 400,
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      //TextField To Enter Contestant Name
+                      TextFormField(
+                        style: bodyTextStyle(),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        controller: _nameController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter a name';
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter Contestant Name',
                         ),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(Icons.close),
-                          color: Colors.red,
-                          iconSize: 25,
-                          splashColor: Colors.redAccent,
-                        )
-                      ],
-                    )
-                  ],
+                      ),
+
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                /// Adds New Contestant To the hive Database
+                                model.addNewGameContestant(
+                                    gameIndex: model.currentGameIndex,
+                                    contestant: Contestant(
+                                      name: _nameController!.text,
+                                    ));
+
+                                _nameController!.clear();
+
+                                Navigator.pop(context);
+                              }
+                            },
+                            icon: const Icon(Icons.check),
+                            iconSize: 25,
+                            color: Colors.green,
+                            splashColor: Colors.greenAccent,
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.close),
+                            color: Colors.red,
+                            iconSize: 25,
+                            splashColor: Colors.redAccent,
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          });
         });
   }
 
@@ -110,13 +117,25 @@ class HeaderButtons extends StatelessWidget {
               addnewContestantDailogue(context);
             },
           ),
+          // const SizedBox(width: 40),
+
+          // const SizedBox(width: 40),
 
           // Button to LeaderBoards Screen
           CustomButton(
             name: 'LeaderBoard',
             svgIconCode: leaderBoardIcon,
             onPressed: () {
-              Navigator.pushNamed(context, 'leaderboard');
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.rightToLeftJoined,
+                  child: const LeaderBoardScreen(),
+                  childCurrent: const HomeScreen(),
+                  // duration: const Duration(seconds: 1),
+                ),
+              );
+              // Navigator.pushNamed(context, 'leaderboard');
             },
           )
         ],

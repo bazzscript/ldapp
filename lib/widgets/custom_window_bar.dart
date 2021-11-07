@@ -12,14 +12,41 @@ class CustomWindowTitleBarBox extends StatelessWidget {
         child: Row(
           children: [
             //Makes Sure the Back Button is Only Shown the LeaderBoard Screen
-            if ('${ModalRoute.of(context)!.settings.name}' == 'leaderboard')
-              IconButton(
-                iconSize: 20,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(Icons.arrow_back),
+            if ('${ModalRoute.of(context)!.settings.name}' == 'leaderboard' ||
+                ModalRoute.of(context)!.canPop &&
+                    '${ModalRoute.of(context)!.settings.name}' != 'login' &&
+                    '${ModalRoute.of(context)!.settings.name}' != 'home' &&
+                    '${ModalRoute.of(context)!.settings.name}' != 'create')
+              Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  highlightColor: Colors.white60,
+                  hoverColor: Colors.white30,
+                  tooltip: 'Go Back',
+                  iconSize: 20,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.arrow_back),
+                ),
               ),
+            //Makes Sure the Menu Button is Only Shown the HomeScreen Screen
+            if ('${ModalRoute.of(context)!.settings.name}' == 'home')
+              Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  highlightColor: Colors.white60,
+                  hoverColor: Colors.white30,
+                  tooltip: 'Curtis Menu',
+                  enableFeedback: true,
+                  iconSize: 20,
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  icon: const Icon(Icons.menu_rounded),
+                ),
+              ),
+
             //Enables window dragging
             Expanded(
               child: MoveWindow(),

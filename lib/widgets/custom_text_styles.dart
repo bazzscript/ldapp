@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 //THE COLUMN NAME STYLES
 TextStyle headerTextStyle() {
   return const TextStyle(
     fontSize: 20,
+    color: Colors.white,
     fontWeight: FontWeight.bold,
   );
 }
@@ -12,6 +12,7 @@ TextStyle headerTextStyle() {
 TextStyle bodyTextStyle() {
   return const TextStyle(
     fontSize: 15,
+    color: Colors.white,
     fontWeight: FontWeight.normal,
   );
 }

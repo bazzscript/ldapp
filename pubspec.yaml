@@ -28,10 +28,16 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   bitsdojo_window: ^0.1.1+1
+  carousel_slider: ^4.0.0
+  file_picker: ^4.2.0
   flutter:
     sdk: flutter
   flutter_svg: ^0.23.0+1
+  flutter_switch: ^0.3.2
   hive: ^2.0.4
+  image_picker: ^0.8.4+4
+  implicitly_animated_reorderable_list: ^0.4.2
+  page_transition: ^2.0.4
   path_provider: ^2.0.5
   provider: ^6.0.1
 
@@ -64,6 +70,18 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
+  fonts:
+    - family: Nasaline
+      fonts:
+        - asset: assets/fonts/nasalization_rg.otf
+
+    - family: MineCraft
+      fonts:
+        - asset: assets/fonts/Minecraft_Evenings.otf
+        
+    - family: Arcade
+      fonts:
+        - asset: assets/fonts/Arcade.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:
