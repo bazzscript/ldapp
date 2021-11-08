@@ -45,6 +45,14 @@ class TitlesAndGameNameWithLogo extends StatelessWidget {
             ],
           ),
           const Spacer(),
+          Image.asset(
+            'assets/logo/logo.png',
+            fit: BoxFit.fill,
+            cacheHeight: 90,
+            // width: 200,
+            height: 90,
+          ),
+          const SizedBox(width: 10),
           SvgPicture.string(
             leaderBoardIcon,
             width: 100,
