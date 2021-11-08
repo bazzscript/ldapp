@@ -44,7 +44,7 @@ And Run the Folloing Command in the following Order
 
 then build the excutable with the following command
 
-5- donload Visual Studio 2019 or later it is required.
+5- download Visual Studio 2019 or later it is required.
 Download at https://visualstudio.microsoft.com/downloads/.
 MSVC v142 — VS 2019 C++ x64/x86 build tools
 — If there are multiple build tool versions available, install the latest
@@ -52,3 +52,6 @@ Windows 10 SDK (10.0.17763.0)
 
 then run one of the following command, depending on the platform you are using
 4- flutter build windoes | flutter build linux | flutter build MacOs
+
+
+You can Open Multiple Instances of the Application

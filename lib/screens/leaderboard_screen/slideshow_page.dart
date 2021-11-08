@@ -43,7 +43,7 @@ class SlideShowScreen extends StatelessWidget {
           options: CarouselOptions(
             autoPlay: true,
             viewportFraction: 1.0,
-            autoPlayInterval: const Duration(milliseconds: 3000),
+            autoPlayInterval: const Duration(milliseconds: 30000),
             autoPlayCurve: Curves.easeInOut,
           )),
     );
