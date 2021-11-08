@@ -47,6 +47,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           // ),
           const SizedBox(height: 40),
 
+          //Change Game Name
           ElevatedButton(
             onPressed: () {
               ///
@@ -150,6 +151,19 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
             child: const Text('Change Game Name'),
           ),
+          const SizedBox(height: 20),
+
+          //Upload Game Slideshow Images
+          ElevatedButton(
+            onPressed: () async {
+              await model.changeGameSlideshowImages(currentGameIndex);
+            },
+            style: ElevatedButton.styleFrom(
+              primary: const Color(0xff2940D3),
+            ),
+            child: const Text('Upload SlideShow Images'),
+          ),
+
           const Spacer(),
           //Log Out Button
           ElevatedButton(

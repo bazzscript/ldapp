@@ -32,17 +32,21 @@ Click on the download button and follow the instructions.
 Articlw i wrote to guide you in installation (https://bezaleelnwabia.hashnode.dev/flutter-for-beginners-1-setup-and-introduction)
 
 
-After you have installed Flutter, you can run this project by opening the project directory in your terminal.
+After you have installed Flutter, 
 
+Clone this project from [GitHub]()
 
-And Run the Folloing Command in the following Order
+Then, run the following command in the project directory:
+- flutter create .
+
+After you which you Run the Following Command in the following Order
 
 0- flutter clean
 1- flutter pub get
 2- flutter packages pub run build_runner build --delete-conflicting-outputs
 3- flutter run -d windows | flutter run -d macos | flutter run -d linux
 
-then build the excutable with the following command
+Then build to build the executable ,that is the installer
 
 5- download Visual Studio 2019 or later it is required.
 Download at https://visualstudio.microsoft.com/downloads/.
@@ -51,7 +55,7 @@ MSVC v142 — VS 2019 C++ x64/x86 build tools
 Windows 10 SDK (10.0.17763.0)
 
 then run one of the following command, depending on the platform you are using
-4- flutter build windoes | flutter build linux | flutter build MacOs
+4- flutter build windows | flutter build linux | flutter build MacOs
 
 
-You can Open Multiple Instances of the Application
+You can Open Multiple Instances of the Application, Simply Open The Application as many times as you want.

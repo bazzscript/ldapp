@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -201,6 +203,60 @@ class Game extends ChangeNotifier {
       box.putAt(gameIndex, games);
     }
     notifyListeners();
+  }
+
+//Upload Game Slideshow Images
+  changeGameSlideshowImages(int gameIndex) async {
+    Box<Game> box;
+    if (Hive.isBoxOpen(_gameBox) == true) {
+      box = Hive.box<Game>(_gameBox);
+    } else {
+      box = await Hive.openBox<Game>(_gameBox);
+    }
+    Game? games = box.getAt(gameIndex);
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowMultiple: true,
+      dialogTitle: 'Upload Slideshow Images',
+      allowedExtensions: ['jpg', 'png'],
+    );
+    if (result != null) {
+      try {
+        List<String?> files = result.paths;
+        // List<File> files = result.paths.map((path) => File(path)).toList();
+        games!.gameStanbySlideshowImages = files;
+        // print(games.gameStanbySlideshowImages);
+        // print('ran 1');
+      } catch (e) {
+        // print('ran 2');
+        print(e);
+        games!.gameStanbySlideshowImages = 'black';
+        // games!.gameStanbySlideshowImages = result.files;
+      }
+      box.putAt(gameIndex, games);
+    } else {
+      // print('else ran');
+      // games!.gameStanbySlideshowImages = 'black';
+      // box.putAt(gameIndex, games);
+    }
+    notifyListeners();
+  }
+
+  //get list of slideshow images
+  dynamic _gameSlideshowImages;
+  dynamic get gameSlideshowImages => _gameSlideshowImages;
+  getGameSlideshowImages(int gameIndex) async {
+    Box<Game> box;
+    if (Hive.isBoxOpen(_gameBox) == true) {
+      box = Hive.box<Game>(_gameBox);
+    } else {
+      box = await Hive.openBox<Game>(_gameBox);
+    }
+    Game? games = box.getAt(gameIndex);
+    _gameSlideshowImages = games!.gameStanbySlideshowImages;
+    // print('from class');
+    // print(_gameSlideshowImages);
+    // notifyListeners();
   }
 
   ///Add New Game Contestant
