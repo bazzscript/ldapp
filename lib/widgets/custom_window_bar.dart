@@ -27,7 +27,10 @@ class CustomWindowTitleBarBox extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             //Makes Sure the Menu Button is Only Shown the HomeScreen Screen
@@ -43,7 +46,10 @@ class CustomWindowTitleBarBox extends StatelessWidget {
                   onPressed: () {
                     Scaffold.of(context).openDrawer();
                   },
-                  icon: const Icon(Icons.menu_rounded),
+                  icon: const Icon(
+                    Icons.menu_rounded,
+                    color: Colors.white,
+                  ),
                 ),
               ),
 

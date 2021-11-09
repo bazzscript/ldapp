@@ -186,7 +186,8 @@ class _LoginToGameScreenState extends State<LoginToGameScreen> {
                                     },
                                     svgIconCode: loginToGameIcon,
                                     textColor: Colors.white,
-                                    primaryColor: const Color(0xff2940D3),
+                                    primaryColor: Colors.green,
+                                    // primaryColor: const Color(0xff2940D3),
                                   ),
                                 ),
 

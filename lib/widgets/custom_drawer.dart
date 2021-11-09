@@ -31,7 +31,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                icon: const Icon(Icons.close),
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
@@ -149,7 +152,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
             style: ElevatedButton.styleFrom(
               primary: const Color(0xff2940D3),
             ),
-            child: const Text('Change Game Name'),
+            child: const Text(
+              'Change Game Name',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
           ),
           const SizedBox(height: 20),
 
@@ -161,7 +169,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
             style: ElevatedButton.styleFrom(
               primary: const Color(0xff2940D3),
             ),
-            child: const Text('Upload SlideShow Images'),
+            child: const Text(
+              'Upload SlideShow Images',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
           ),
 
           const Spacer(),
@@ -174,7 +187,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
               Navigator.popAndPushNamed(context, 'login');
               // Navigator.of(context).popUntil(ModalRoute.withName("login"));
             },
-            child: const Text('LOG OUT'),
+            child: const Text(
+              'LOG OUT',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
           ),
           const SizedBox(height: 45),
         ],
