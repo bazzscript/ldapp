@@ -121,11 +121,25 @@ class LeaderBoardTile extends StatelessWidget {
                       child: isThisContestantOnFire
                           ? const Text(
                               '🔥',
-                              style: TextStyle(fontSize: 30),
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Colors.white,
+                                decorationColor: Colors.transparent,
+                                shadows: [
+                                  Shadow(color: Colors.transparent),
+                                ],
+                              ),
                             )
                           : const Text(
                               '❄️',
-                              style: TextStyle(fontSize: 30),
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Colors.white,
+                                decorationColor: Colors.transparent,
+                                shadows: [
+                                  Shadow(color: Colors.transparent),
+                                ],
+                              ),
                             )),
                   const SizedBox(width: 20),
 

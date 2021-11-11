@@ -25,11 +25,13 @@ class HeaderButtons extends StatelessWidget {
     showDialog(
         context: context,
         barrierLabel: 'ADD NEW CONTESTANT',
+        barrierColor: Colors.black.withOpacity(0.7),
         builder: (context) {
           return Consumer<Game>(builder: (context, model, child) {
             return Dialog(
               child: Container(
                 // height: 300,
+                color: Colors.black,
                 width: 400,
                 padding: const EdgeInsets.all(20),
                 child: Form(
@@ -59,34 +61,40 @@ class HeaderButtons extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          IconButton(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                /// Adds New Contestant To the hive Database
-                                model.addNewGameContestant(
-                                    gameIndex: model.currentGameIndex,
-                                    contestant: Contestant(
-                                      name: _nameController!.text,
-                                    ));
+                          Material(
+                            color: Colors.transparent,
+                            child: IconButton(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  /// Adds New Contestant To the hive Database
+                                  model.addNewGameContestant(
+                                      gameIndex: model.currentGameIndex,
+                                      contestant: Contestant(
+                                        name: _nameController!.text,
+                                      ));
 
-                                _nameController!.clear();
+                                  _nameController!.clear();
 
-                                Navigator.pop(context);
-                              }
-                            },
-                            icon: const Icon(Icons.check),
-                            iconSize: 25,
-                            color: Colors.green,
-                            splashColor: Colors.greenAccent,
+                                  Navigator.pop(context);
+                                }
+                              },
+                              icon: const Icon(Icons.check),
+                              iconSize: 25,
+                              color: Colors.green,
+                              splashColor: Colors.greenAccent,
+                            ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: const Icon(Icons.close),
-                            color: Colors.red,
-                            iconSize: 25,
-                            splashColor: Colors.redAccent,
+                          Material(
+                            color: Colors.transparent,
+                            child: IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(Icons.close),
+                              color: Colors.red,
+                              iconSize: 25,
+                              splashColor: Colors.redAccent,
+                            ),
                           )
                         ],
                       )

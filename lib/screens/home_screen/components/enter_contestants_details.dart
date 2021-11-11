@@ -534,6 +534,7 @@ class _IsContestTantOnFireSwitchState extends State<IsContestTantOnFireSwitch> {
       builder: (context, model, child) {
         return FlutterSwitch(
           activeText: '🔥',
+          activeTextColor: Colors.white,
           showOnOff: true,
           activeColor: Colors.green.shade200,
           inactiveTextColor: Colors.white,
