@@ -59,10 +59,6 @@ class Game extends ChangeNotifier {
   /// (can be compared to an SQL Table but unlike SQL TABLE, a Hive Box Has No Structure)
   final String _gameBox = 'gamebox';
 
-/**
- *  Game Methods To Work With
- */
-
   ///This Method Creates a new game
   createNewGame(Game game) async {
     Box<Game> box;
@@ -140,37 +136,6 @@ class Game extends ChangeNotifier {
     box.putAt(gameIndex, game);
     _activeGameLeaderBoardStatus = game.isgameLeaderBoardActive;
 
-    notifyListeners();
-  }
-
-  /// Update Game Logo
-  changeGameLogo(int gameIndex) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    Game? games = box.getAt(gameIndex);
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowMultiple: false,
-      dialogTitle: 'Update Logo',
-      allowedExtensions: ['jpg', 'png'],
-    );
-    if (result != null) {
-      try {
-        games!.gameLogo = result.files.single.path;
-      } catch (e) {
-        games!.gameLogo = result.files.first.path;
-      } finally {
-        games!.gameLogo = 'curtis';
-      }
-      box.putAt(gameIndex, games);
-    } else {
-      games!.gameLogo = 'curtis';
-      box.putAt(gameIndex, games);
-    }
     notifyListeners();
   }
 
