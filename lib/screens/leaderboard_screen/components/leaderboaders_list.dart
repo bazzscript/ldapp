@@ -8,11 +8,11 @@ class LeaderBoardersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int currentGameIndex = Provider.of<Game>(context).currentGameIndex;
+    int currentGameId = Provider.of<Game>(context).currentGameId;
     //Function To Get List Of Contestants
 
     return Consumer<Game>(builder: (context, model, child) {
-      model.getSortedGameContestantsList(currentGameIndex);
+      model.getSortedGameContestantsList(currentGameId);
       return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -36,9 +36,9 @@ class LeaderBoardTile extends StatelessWidget {
   final String name;
   final int position;
   final int score;
-  int index;
+  final int index;
 
-  LeaderBoardTile({
+  const LeaderBoardTile({
     Key? key,
     required this.name,
     required this.position,

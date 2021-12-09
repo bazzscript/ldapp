@@ -1,36 +1,39 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:ldapp/models/game/game.dart';
 import 'package:ldapp/screens/home_screen/components/columns_label.dart';
 import 'package:ldapp/screens/home_screen/components/enter_contestants_details.dart';
 import 'package:ldapp/screens/home_screen/components/headerbuttons.dart';
 import 'package:ldapp/screens/home_screen/components/home_footer.dart';
 import 'package:ldapp/utils/appcolors.dart';
+import 'package:ldapp/utils/gameconstants.dart';
 import 'package:ldapp/widgets/custom_drawer.dart';
 import 'package:ldapp/widgets/custom_window_bar.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
-
+  @override
   @override
   Widget build(BuildContext context) {
-    print(Provider.of<Game>(context).currentGameIndex);
     return Scaffold(
       drawerEnableOpenDragGesture: false,
       backgroundColor: Colors.black,
+
+      //The Game Menu
       drawer: const Drawer(
         child: CustomDrawer(),
       ),
+
+      //Actual Home Screen
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Stack(
           fit: StackFit.expand,
           children: [
+            // Game Wallpaper
             Image.asset(
-              'assets/images/kingofgames2.jpg',
+              GameConstants.GAME_HOME_SCREEN_WALLPAPER,
               fit: BoxFit.cover,
             ),
             ClipRRect(
@@ -56,7 +59,9 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(height: 5),
 
                       //Enter Contestants Details Body
-                      const Expanded(child: EnterContestantsDetails()),
+                      const Expanded(
+                        child: EnterContestantsDetails(),
+                      ),
 
                       const SizedBox(height: 20),
 

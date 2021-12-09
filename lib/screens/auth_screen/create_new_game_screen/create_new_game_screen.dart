@@ -100,7 +100,8 @@ class _CreateNewGameScreenState extends State<CreateNewGameScreen> {
                                           if (value!.isEmpty) {
                                             return 'Please Enter A Game Name';
                                           } else if (checkifGameNameExists(
-                                                  _gameList, value) ==
+                                                  _gameList,
+                                                  value.toUpperCase()) ==
                                               true) {
                                             return 'Game Name Already Exists';
                                           }
@@ -108,8 +109,8 @@ class _CreateNewGameScreenState extends State<CreateNewGameScreen> {
                                         },
                                         textAlign: TextAlign.center,
 
-                                        inputFormatters: const <
-                                            TextInputFormatter>[
+                                        inputFormatters: <TextInputFormatter>[
+                                          UpperCaseTextFormatter(),
                                           // LengthLimitingTextInputFormatter(20),
                                         ],
                                         cursorColor: AppColors.decorationColor1,
@@ -171,8 +172,15 @@ class _CreateNewGameScreenState extends State<CreateNewGameScreen> {
                                               .validate()) {
                                             await model.createNewGame(
                                               Game(
-                                                gamename:
-                                                    _gameNameController!.text,
+                                                gameid: model.gamesList.length *
+                                                        randomNumberGenerator(
+                                                            10, 10000) +
+                                                    model.gamesList.length +
+                                                    randomNumberGenerator(
+                                                        100, 1000),
+                                                gamename: _gameNameController!
+                                                    .text
+                                                    .toUpperCase(),
                                                 gameContestants: [],
                                                 gameStanbySlideshowImages: [],
                                                 isgameLeaderBoardActive: false,
@@ -245,8 +253,6 @@ class _CreateNewGameScreenState extends State<CreateNewGameScreen> {
   }
 }
 
-
-                    
 //                       ),
 //                     ],
 //                   ),
@@ -259,3 +265,13 @@ class _CreateNewGameScreenState extends State<CreateNewGameScreen> {
 //     );
 //   }
 // }
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}

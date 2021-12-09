@@ -12,8 +12,8 @@ class TitlesAndGameNameWithLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int currentIndex = Provider.of<Game>(context).currentGameIndex;
-    Provider.of<Game>(context).activeGameName(currentIndex);
+    int currentgameid = Provider.of<Game>(context).currentGameId;
+    Provider.of<Game>(context).activeGameName(currentgameid);
     var gameName = Provider.of<Game>(context).activegamename;
 
     return Container(

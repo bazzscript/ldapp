@@ -1,44 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-part 'contestant.g.dart';
 
-// @HiveType()
-@HiveType(typeId: 0)
 class Contestant extends ChangeNotifier {
-  // @override
-  // int get typeId => 0;
-
-  // @HiveField(0)
+  /// Contestant Id
   int id;
 
   //Contestants Name
-  // @HiveField(1)
   String name;
 
   /// Contestant Score Round 1
-  // @HiveField(2)
   int round1;
 
   /// Contestant Score Round 2
-  // @HiveField(3)
   int round2;
 
   /// Contestant Score Round 3
-  // @HiveField(4)
   int round3;
 
   /// Contestant Score Round 4
-  // @HiveField(5)
   int round4;
 
   /// Total Score of Contestant
-  // @HiveField(6)
   int totalScore;
 
-  //Prediction
-  // @HiveField(7)
+  /// Prediction of Contestant
   int prediction;
 
+  /// Is Contestant On Fire
   bool isContestantOnFire;
 
   Contestant({
@@ -52,4 +39,43 @@ class Contestant extends ChangeNotifier {
     this.totalScore = 0,
     this.isContestantOnFire = false,
   });
+
+  /// Convert Json To Contestant Object
+  fromJson(Map<String, dynamic> json) {
+    return Contestant(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      prediction: json['prediction'] as int,
+      round1: json['round1'] as int,
+      round2: json['round2'] as int,
+      round3: json['round3'] as int,
+      round4: json['round4'] as int,
+      totalScore: json['totalScore'] as int,
+      isContestantOnFire: json['isContestantOnFire'] as bool,
+    );
+  }
+  // fromJson(Map<String, dynamic> json) {
+  //   id = json['id'];
+  //   name = json['name'];
+  //   prediction = json['prediction'];
+  //   round1 = json['round1'];
+  //   round2 = json['round2'];
+  //   round3 = json['round3'];
+  //   round4 = json['round4'];
+  //   totalScore = json['totalScore'];
+  //   isContestantOnFire = json['isContestantOnFire'];
+  // }
+
+  /// Convert Contestant Object To Json
+  Map toJson() => <String, dynamic>{
+        'id': id,
+        'name': name,
+        'prediction': prediction,
+        'round1': round1,
+        'round2': round2,
+        'round3': round3,
+        'round4': round4,
+        'totalScore': totalScore,
+        'isContestantOnFire': isContestantOnFire,
+      };
 }

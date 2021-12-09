@@ -1,241 +1,278 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:ldapp/core/database.dart';
 import 'package:ldapp/models/contestant/contestant.dart';
-part 'game.g.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 
-@HiveType(typeId: 1)
+//Only One Collection Here
+const _collectionName = "curtisGames";
+
+//Game Class
 class Game extends ChangeNotifier {
   /// GAME ID
-  @HiveField(0)
   int gameid;
 
   /// Game Name
-  @HiveField(1)
   String gamename;
 
   /// GAME LOGO
-  @HiveField(2)
   dynamic gameLogo;
 
   /// SLIDESHOW IMAGES
-  @HiveField(3)
   dynamic gameStanbySlideshowImages;
 
   /// Game  Background Image
-  @HiveField(4)
   dynamic gameBgImage;
 
   /// Show A Slide Show Screen Or LeaderBoard
   /// This Should Be Implemented With A Switch
   /// So As TO Activate And Deactivate LeaderBoard Easily
-  @HiveField(5)
   bool isgameLeaderBoardActive;
 
   /// Game Contestants List / Store
-  @HiveField(6)
   dynamic gameContestants;
 
   /// The Current Game
   /// Not Really Needed to be saved in a db but it doesnt hurt to add to db
-  @HiveField(7)
   int currentGameIndex = 0;
 
   Game({
     this.gameid = 0,
     this.gamename = 'Curtis Game',
-    this.gameLogo,
-    this.gameBgImage,
+    // this.gameLogo,
+    // this.gameBgImage,
     this.gameContestants,
     this.gameStanbySlideshowImages,
     this.isgameLeaderBoardActive = false,
-    // this.currentGameIndex = 0,
+    this.currentGameIndex = 0,
   });
 
-  /// GAMES BOX
-  ///
-  /// (can be compared to an SQL Table but unlike SQL TABLE, a Hive Box Has No Structure)
-  final String _gameBox = 'gamebox';
+  int currentGameId = 0000;
+
+  //Convert json to game object
+  fromJson(Map<String, dynamic> json) {
+    gameid = json['gameid'];
+    gamename = json['gamename'];
+    // gameLogo = json['gameLogo'];
+    gameStanbySlideshowImages = json['gameStanbySlideshowImages'];
+    // gameBgImage = json['gameBgImage'];
+    isgameLeaderBoardActive = json['isgameLeaderBoardActive'];
+    gameContestants = json['gameContestants'];
+    currentGameIndex = json['currentGameIndex'];
+  }
+
+  //convert game object to json
+  Map toJson() => <String, dynamic>{
+        'gamename': gamename,
+        'gameid': gameid,
+        // 'gameLogo': gameLogo,
+        // 'gameBgImage': gameBgImage,
+        'gameContestants': gameContestants,
+        'gameStanbySlideshowImages': gameStanbySlideshowImages,
+        'isgameLeaderBoardActive': isgameLeaderBoardActive,
+        'currentGameIndex': currentGameIndex,
+      };
+
+  DBConnection dbConnection = DBConnection();
+
+  logOut() {
+    dbConnection.closeConnection();
+  }
 
   ///This Method Creates a new game
   createNewGame(Game game) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-
-    box.add(game);
-    // print(box);
+    var db = await dbConnection.getDatabase();
+    var gameCollection = await db.collection(_collectionName);
+    //Insert the new game
+    await gameCollection.insert(game.toJson());
+    logOut();
     notifyListeners();
   }
 
   ///Get List Of All Games
-  List _gamesList = <Game>[];
+  final List _gamesList = <Game>[];
   List get gamesList => _gamesList;
+  //GET ALL GAMES
   getGameList() async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    _gamesList = box.values.toList();
-    //
+    //Get the db connection
+    var db = await dbConnection.getDatabase();
 
+    //Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    //Get all the games in the collection
+    var gameList = await gameCollection.find().toList();
+
+    //Convert the game list to game objects
+    for (var game in gameList) {
+      Game gameObj = Game();
+      await gameObj.fromJson(game);
+
+      //Add the game object to the games list
+      _gamesList.add(gameObj);
+    }
+    logOut();
     notifyListeners();
   }
 
-  ///Delete Game From Database
-  deleteGame(int gameIndex) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    box.deleteAt(gameIndex);
+  //Update The Game Name
+  changeGameName({
+    required int gameId,
+    required String gamename,
+  }) async {
+    //Get the database
+    var db = await dbConnection.getDatabase();
+
+    //Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    //Update the game name
+    await gameCollection.updateOne(
+      where.eq('gameid', gameId),
+      modify.set('gamename', gamename),
+    );
+    logOut();
+
+    //Notify the listeners
     notifyListeners();
   }
 
-  ///Update Game Name
-  changeGameName({required int gameIndex, required String gamename}) async {
-    // final box = Hive.box<Game>(_gameBox);
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    Game? game = box.getAt(gameIndex);
-    game!.gamename = gamename;
-    box.putAt(gameIndex, game);
+  //See game name given game index
+  String _activegamename = 'Curtis Game';
+  String get activegamename => _activegamename;
 
-    notifyListeners();
+  activeGameName(int gameId) async {
+    //Get the database
+    var db = await dbConnection.getDatabase();
+
+    //Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    //Get The Current Loged In Game
+    var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    Game gameObj = Game();
+    await gameObj.fromJson(game);
+
+    _activegamename = gameObj.gamename;
+    logOut();
+
+    // notifyListeners();
   }
 
   // Activate Or Deactivate LeaderBoard Screen
   bool _activeGameLeaderBoardStatus = false;
   bool get activeGameLeaderBoardStatus => _activeGameLeaderBoardStatus;
   activateOrDeactivateGameLeaderBoardScreen({
-    required int gameIndex,
+    required int gameId,
     required bool activateGameLeaderBoard,
   }) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    // final box = Hive.box<Game>(_gameBox);
-    Game? game = box.getAt(gameIndex);
-    game!.isgameLeaderBoardActive = activateGameLeaderBoard;
-    box.putAt(gameIndex, game);
-    _activeGameLeaderBoardStatus = game.isgameLeaderBoardActive;
+    //Get the database
+    var db = await dbConnection.getDatabase();
 
-    notifyListeners();
-  }
+    //Get the game collection
+    var gameCollection = await db.collection(_collectionName);
 
-  ///Change Background Image
-  changeGameBgImage(int gameIndex) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    Game? games = box.getAt(gameIndex);
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowMultiple: false,
-      dialogTitle: 'Change Curtis Software Background Image',
-      allowedExtensions: ['jpg', 'png'],
+    // Update the game leader board status
+    await gameCollection.updateOne(
+      where.eq('gameid', gameId),
+      modify.set('isgameLeaderBoardActive', activateGameLeaderBoard),
     );
-    if (result != null) {
-      try {
-        games!.gameBgImage = result.files.single.path;
-      } catch (e) {
-        games!.gameBgImage = result.files.first.path;
-      } finally {
-        games!.gameBgImage = 'black';
-      }
-      box.putAt(gameIndex, games);
-    } else {
-      games!.gameBgImage = 'black';
-      box.putAt(gameIndex, games);
-    }
+
+    // GET CURRENT ISGAMELEADERBOARD STATUS AND SET THE VALUE TO _ACTIVEGAMELEADERBOARDSTATUS
+    var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    Game gameObj = Game();
+    await gameObj.fromJson(game);
+
+    _activeGameLeaderBoardStatus = gameObj.isgameLeaderBoardActive;
+    logOut();
     notifyListeners();
   }
 
 //Upload Game Slideshow Images
-  changeGameSlideshowImages(int gameIndex) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    Game? games = box.getAt(gameIndex);
+  changeGameSlideshowImages(int gameId) async {
+    //Get the database
+    var db = await dbConnection.getDatabase();
+
+    //Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    //Pick Images For The SlideShow Screen
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowMultiple: true,
       dialogTitle: 'Upload Slideshow Images',
-      allowedExtensions: ['jpg', 'png'],
+      allowedExtensions: ['jpg', 'png', 'jpeg'],
     );
+
     if (result != null) {
       try {
-        List<String?> files = result.paths;
-        // List<File> files = result.paths.map((path) => File(path)).toList();
-        games!.gameStanbySlideshowImages = files;
-        // print(games.gameStanbySlideshowImages);
-        // print('ran 1');
+        var files = result.paths;
+        await gameCollection.updateOne(
+          where.eq('gameid', gameId),
+          modify.set('gameStanbySlideshowImages', files),
+        );
       } catch (e) {
-        // print('ran 2');
         print(e);
-        games!.gameStanbySlideshowImages = 'black';
-        // games!.gameStanbySlideshowImages = result.files;
+        await gameCollection.updateOne(
+          where.eq('gameid', gameId),
+          modify.set('gameStanbySlideshowImages', []),
+        );
       }
-      box.putAt(gameIndex, games);
-    } else {
-      // print('else ran');
-      // games!.gameStanbySlideshowImages = 'black';
-      // box.putAt(gameIndex, games);
     }
+
+    logOut();
+
     notifyListeners();
   }
 
-  //get list of slideshow images
-  dynamic _gameSlideshowImages;
-  dynamic get gameSlideshowImages => _gameSlideshowImages;
-  getGameSlideshowImages(int gameIndex) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    Game? games = box.getAt(gameIndex);
-    _gameSlideshowImages = games!.gameStanbySlideshowImages;
-    // print('from class');
-    // print(_gameSlideshowImages);
-    // notifyListeners();
+  // get list of game slideshow images
+  List<dynamic> _gameSlideshowImages = [];
+  List<dynamic> get gameSlideshowImages => _gameSlideshowImages;
+
+  getGameSlideshowImages(int gameId) async {
+    //Get the database
+    var db = await dbConnection.getDatabase();
+
+    //Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    // Get The Current Logged In Game
+    var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    Game gameObj = Game();
+    await gameObj.fromJson(game);
+
+    _gameSlideshowImages = gameObj.gameStanbySlideshowImages;
+    logOut();
+    notifyListeners();
   }
 
-  ///Add New Game Contestant
-  addNewGameContestant(
-      {required int gameIndex, required Contestant contestant}) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    Game? game = box.getAt(gameIndex);
-    game!.gameContestants.add(contestant);
-    box.putAt(gameIndex, game);
+  //Add New Game Contestant
+  addNewGameContestant({
+    required int gameId,
+    required Contestant contestant,
+  }) async {
+    //Get the database
+    var db = await dbConnection.getDatabase();
+
+    //Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    //Get the Game Given The Game Id, And Add The New Contestant
+    await gameCollection.updateOne(
+      where.eq('gameid', gameId),
+      modify.push('gameContestants', contestant.toJson()),
+    );
+
+// get list of cof game contestants
+    // var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    // Game gameObj = Game();
+    // await gameObj.fromJson(game);
+
+    // _gameContestants = gameObj.gameContestants;
+
+    logOut();
+
+    //Notify the listeners
     notifyListeners();
   }
 
@@ -244,172 +281,261 @@ class Game extends ChangeNotifier {
   ///This is Sorted based on totalscore
   List _sortedContestantsList = <Contestant>[];
   List get sortedContestantsList => _sortedContestantsList;
-  getSortedGameContestantsList(int gameIndex) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    Game? game = box.getAt(gameIndex);
-    _sortedContestantsList = game!.gameContestants.toList();
-    _sortedContestantsList.sort((a, b) => b.totalScore.compareTo(a.totalScore));
-    // notifyListeners();
-  }
+  getSortedGameContestantsList(int gameId) async {
+    var db = await dbConnection.getDatabase();
+    var gameCollection = await db.collection(_collectionName);
+    var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    Game gameObj = Game();
+    await gameObj.fromJson(game);
+    Contestant contestant = Contestant();
+    var gclist = await gameObj.gameContestants
+        .map((e) => contestant.fromJson(e))
+        .toList();
 
-  ///Get unsorted List Of All Game Contestants
-  ///This is best suited for the home screen
-  List _gameContestantsList = <Contestant>[];
-  List get gameContestantsList => _gameContestantsList;
-  getGameContestantsList(int gameIndex) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
+    List<dynamic> contestants = gclist;
 
-    Game? game = box.getAt(gameIndex);
-    _gameContestantsList = game!.gameContestants.toList();
+    // sort list of contestant based on thier totalscore
+    contestants.sort((a, b) => b.totalScore.compareTo(a.totalScore));
+    _sortedContestantsList = contestants;
 
-    // notifyListeners();
-  }
+    logOut();
 
-  ///Delete Contestant From ContestantList
-  deleteGameContestant(
-      {required int gameIndex, required int contestantIndex}) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    Game? game = box.getAt(gameIndex);
-    game!.gameContestants.removeAt(contestantIndex);
-    box.putAt(gameIndex, game);
     notifyListeners();
   }
 
-  ///Update Contestant Prediction, Round 1,2,3,4 Scores
+  /// et unsorted List Of All Game Contestants
+  /// This is tailored for the home screen
+  List _gameContestantsList = <Contestant>[];
+  List get gameContestantsList => _gameContestantsList;
+  getGameContestantsList(int gameId) async {
+    // Get the database
+    var db = await dbConnection.getDatabase();
+
+    // Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    // Get the Game Given The Game Id
+    var game = await gameCollection.findOne(
+      where.eq(
+        'gameid',
+        gameId,
+      ),
+    );
+
+    Game gameObj = Game();
+    await gameObj.fromJson(game);
+
+    Contestant contestant = Contestant();
+    var gclist = await gameObj.gameContestants
+        .map((e) => contestant.fromJson(e))
+        .toList();
+    _gameContestantsList = gclist;
+
+    logOut();
+    notifyListeners();
+  }
+
+  /// Update Game Contestant Name
+  updateGameContestantName({
+    required int gameId,
+    required int contestantIndex,
+    required String contestantName,
+  }) async {
+    // Get the database
+    var db = await dbConnection.getDatabase();
+
+    // Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    // Given a Game id, Look For A Particular Contestant And Update The Contestant Name
+    await gameCollection.updateOne(
+      where.eq('gameid', gameId),
+      modify.set('gameContestants.$contestantIndex.name', contestantName),
+    );
+    logOut();
+    notifyListeners();
+  }
+
+  /// Delete Contestant From ContestantList
+  deleteGameContestant({
+    required int gameId,
+    required int contestantIndex,
+  }) async {
+    // Get the database
+    var db = await dbConnection.getDatabase();
+
+    // Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    // Get A Game Given The Game Id
+    var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    Game gameObj = Game();
+
+    // Convert Json To Game Object
+    await gameObj.fromJson(game);
+    List gamecontestantlist = gameObj.gameContestants;
+
+    // Remove the Contestant Using The Contestant index
+    await gamecontestantlist.removeAt(contestantIndex);
+
+    // Update The Game Contestant List With The New Contestant List
+    await gameCollection.updateOne(
+      where.eq('gameid', gameId),
+      modify.set('gameContestants', gamecontestantlist),
+    );
+
+    logOut();
+    notifyListeners();
+  }
+
+  // Update Contestant Round 1,2,3,4 Scores
   updateGameContestantScores({
-    required gameIndex,
+    required int gameId,
     required int contestantIndex,
     required String round,
     required int contestantScore,
   }) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    // final box = Hive.box<Game>(_gameBox);
+    // Get the database
+    var db = await dbConnection.getDatabase();
 
-    Game? game = box.getAt(gameIndex);
-    // Contestant? contestant = game!.gameContestants[contestantIndex];
-    if (round == 'round1') {
-      game!.gameContestants[contestantIndex].round1 = contestantScore;
-    } else if (round == 'round2') {
-      game!.gameContestants[contestantIndex].round2 = contestantScore;
-    } else if (round == 'round3') {
-      game!.gameContestants[contestantIndex].round3 = contestantScore;
-    } else if (round == 'round4') {
-      game!.gameContestants[contestantIndex].round4 = contestantScore;
-    }
+    // Get the game collection
+    var gameCollection = await db.collection(_collectionName);
 
-    box.putAt(gameIndex, game!);
+    // Get A Game Given The Game Id
+    var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    Game gameObj = Game();
+
+    // Convert Json To Game Object
+    await gameObj.fromJson(game);
+    // List gamecontestantlist = gameObj.gameContestants;
+
+    // Update The Game Contestant List With The New Contestant List
+    await gameCollection.updateOne(
+      where.eq('gameid', gameId),
+      modify.set('gameContestants.$contestantIndex.$round', contestantScore),
+    );
+
+    logOut();
     notifyListeners();
   }
 
   // Update Game Contestants TotalScores
-  updateGameContestantTotalScores(int gameIndex) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
+
+  updateGameContestantTotalScores(int gameId) async {
+    // Get the database
+    var db = await dbConnection.getDatabase();
+
+    // Get the game collection
+    var gameCollection = await db.collection(_collectionName);
+
+    // Get A Game Given The Game Id
+    var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    Game gameObj = Game();
+
+    // Convert Json To Game Object
+    await gameObj.fromJson(game);
+    Contestant contestant = Contestant();
+    var gamecontestantlist = await gameObj.gameContestants
+        .map((e) => contestant.fromJson(e))
+        .toList();
+
+    // Update the Contestant Using The Contestant index
+
+    for (int i = 0; i < gamecontestantlist.length; i++) {
+      gamecontestantlist[i].totalScore = gamecontestantlist[i].round1 +
+          gamecontestantlist[i].round2 +
+          gamecontestantlist[i].round3 +
+          gamecontestantlist[i].round4;
     }
-    Game? game = box.getAt(gameIndex);
-    for (int i = 0; i < game!.gameContestants.length; i++) {
-      game.gameContestants[i].totalScore = game.gameContestants[i].round1 +
-          game.gameContestants[i].round2 +
-          game.gameContestants[i].round3 +
-          game.gameContestants[i].round4;
-    }
-    box.putAt(gameIndex, game);
+
+    // Convert back to json and save to db
+    var gc = await gamecontestantlist.map((e) => e.toJson()).toList();
+    await gameCollection.updateOne(
+      where.eq('gameid', gameId),
+      modify.set('gameContestants', gc),
+    );
+
+    logOut();
     notifyListeners();
-  }
-
-  ///Update Contestant Name
-  updateGameContestantName({
-    required int gameIndex,
-    required int contestantIndex,
-    required String contestantName,
-  }) async {
-    // final box = Hive.box<Game>(_gameBox);
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-
-    Game? game = box.getAt(gameIndex);
-
-    game!.gameContestants[contestantIndex].name = contestantName;
-    box.putAt(gameIndex, game);
-    notifyListeners();
-  }
-
-  //See game name given game index
-  String _activegamename = 'Curtis Game';
-  String get activegamename => _activegamename;
-
-  activeGameName(int gameIndex) async {
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
-    Game? game = box.getAt(gameIndex);
-    _activegamename = game!.gamename;
-    // notifyListeners();
   }
 
   ///Update Contestant prediction
   updateGameContestantPrediction({
-    required int gameIndex,
+    required int gameId,
     required int contestantIndex,
     required int contestantPrediction,
   }) async {
-    // final box = Hive.box<Game>(_gameBox);
-    Box<Game> box = await Hive.openBox(_gameBox);
+    // Get The Db
+    var db = await dbConnection.getDatabase();
 
-    Game? game = box.getAt(gameIndex);
-    game!.gameContestants[contestantIndex].prediction = contestantPrediction;
-    box.putAt(gameIndex, game);
+    // Get The Game Collection
+    var gameCollection = await db.collection(_collectionName);
+
+    // Get The Game Given The Game Id
+    var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    Game gameObj = Game();
+
+    // Convert The Game From Json To A Game Object
+    await gameObj.fromJson(game);
+    Contestant contestant = Contestant();
+
+    var gamecontestantlist = await gameObj.gameContestants
+        .map((e) => contestant.fromJson(e))
+        .toList();
+
+    // Update the Contestant Using The Contestant index
+    gamecontestantlist[contestantIndex].prediction = contestantPrediction;
+
+    //Convert Game Object to json and save to db
+    var b = await gamecontestantlist.map((e) => e.toJson()).toList();
+
+    // Update The Contestant Prediction
+    await gameCollection.updateOne(
+      where.eq('gameid', gameId),
+      modify.set('gameContestants', b),
+    );
+
+    logOut();
+
+    // Notify The Listeners
     notifyListeners();
   }
 
   ///Toggles Whether A Game Contestant Is On Fire Or Not
   isGameContestantOnFire({
-    required int gameIndex,
+    required int gameId,
     required int contestantIndex,
     required bool isContestantOnFire,
   }) async {
-    // final box = Hive.box<Game>(_gameBox);
-    Box<Game> box;
-    if (Hive.isBoxOpen(_gameBox) == true) {
-      box = Hive.box<Game>(_gameBox);
-    } else {
-      box = await Hive.openBox<Game>(_gameBox);
-    }
+    // Get The Db
+    var db = await dbConnection.getDatabase();
 
-    Game? game = box.getAt(gameIndex);
-    game!.gameContestants[contestantIndex].isContestantOnFire =
-        isContestantOnFire;
-    box.putAt(gameIndex, game);
+    // Get The Game Collection
+    var gameCollection = await db.collection(_collectionName);
+
+    // Get The Game Given The Game Id
+    var game = await gameCollection.findOne(where.eq('gameid', gameId));
+    Game gameObj = Game();
+
+    // Convert The Game From Json To A Game Object
+    await gameObj.fromJson(game);
+    Contestant contestant = Contestant();
+
+    var gamecontestantlist = await gameObj.gameContestants
+        .map((e) => contestant.fromJson(e))
+        .toList();
+
+    // Update the Contestant Using The Contestant index
+    gamecontestantlist[contestantIndex].isContestantOnFire = isContestantOnFire;
+
+    //Convert back to json and save to db
+    var b = await gamecontestantlist.map((e) => e.toJson()).toList();
+    await gameCollection.updateOne(
+      where.eq('gameid', gameId),
+      modify.set('gameContestants', b),
+    );
+
+    logOut();
     notifyListeners();
   }
 }

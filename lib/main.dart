@@ -1,25 +1,15 @@
-import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:ldapp/models/contestant/contestant.dart';
 import 'package:ldapp/models/game/game.dart';
 import 'package:ldapp/screens/auth_screen/create_new_game_screen/create_new_game_screen.dart';
 import 'package:ldapp/screens/auth_screen/login_screen/login_screen.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:ldapp/screens/home_screen/home_screen.dart';
 import 'package:ldapp/screens/leaderboard_screen/leaderboard_screen.dart';
 import 'package:provider/provider.dart';
 
-Future<void> main() async {
-  //Initialize the app local storage directory on the file system
-  Directory directory = await path_provider.getApplicationDocumentsDirectory();
-  Hive.init(directory.path);
-  Hive.registerAdapter(GameAdapter());
-  Hive.registerAdapter(ContestantAdapter());
-
+main() async {
   //StartUp App
   runApp(const MyApp());
 
@@ -43,7 +33,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => Game(),
+      create: (context) => Game(),
       child: MaterialApp(
         darkTheme: ThemeData(
           fontFamily: 'Nasaline',
@@ -52,63 +42,6 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: const Color(0xFF121212),
           backgroundColor: const Color(0xFF121212),
           primaryColor: Colors.black,
-          textTheme: const TextTheme(
-            headline1: TextStyle(
-              color: Colors.white,
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-            ),
-            headline2: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-            headline3: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            headline4: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            headline5: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-            headline6: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-            bodyText1: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-            bodyText2: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-            button: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            caption: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            overline: TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
           iconTheme: const IconThemeData().copyWith(color: Colors.white),
         ),
         debugShowCheckedModeBanner: false,

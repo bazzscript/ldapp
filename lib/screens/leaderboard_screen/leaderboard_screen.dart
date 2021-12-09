@@ -21,15 +21,6 @@ class LeaderBoardScreen extends StatelessWidget {
 
     bool isLeaderboardActive =
         Provider.of<Game>(context).activeGameLeaderBoardStatus;
-    //  whattoshow() {
-    //     Widget lt;
-    //     if (Provider.of<Game>(context).isgameLeaderBoardActive == true) {
-    //       return lt = Expanded(child: LeaderBoardersList());
-    //     } else if (Provider.of<Game>(context).isgameLeaderBoardActive == false) {
-    //       return lt = Expanded(child: SlideShowScreen());
-    //     }
-
-    //   }
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -65,8 +56,9 @@ class LeaderBoardScreen extends StatelessWidget {
 
                                   //The Pinkish Divider
                                   Divider(
-                                      thickness: 6,
-                                      color: AppColors.secondaryAppColor1),
+                                    thickness: 6,
+                                    color: AppColors.secondaryAppColor1,
+                                  ),
 
                                   ColumnLabel(),
 
@@ -77,7 +69,9 @@ class LeaderBoardScreen extends StatelessWidget {
                                 ],
                               ),
                             )
-                          : const Expanded(child: SlideShowScreen()),
+                          : const Expanded(
+                              child: SlideShowScreen(),
+                            ),
                     ],
                   ),
                 ),

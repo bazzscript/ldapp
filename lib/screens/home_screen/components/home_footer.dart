@@ -24,22 +24,19 @@ class _HomeFooterState extends State<HomeFooter> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // FlutterSwitch(value: false, onToggle: )
-            // const SizedBox(width: 40),
-
-            // const SizedBox(width: 40),
-
             // Button to Update Total Scores
             CustomButton(
               name: 'Update TotalScores',
               svgIconCode: leaderBoardIcon,
               textColor: Colors.white,
               primaryColor: Colors.green,
-              onPressed: () {
-                model.updateGameContestantTotalScores(model.currentGameIndex);
+              onPressed: () async {
+                await model
+                    .updateGameContestantTotalScores(model.currentGameId);
               },
             ),
 
+            // Switch To Toggle LeaderBoard Screen Status
             FlutterSwitch(
               //Active Checks
               activeText: 'LEADERBOARD ACTIVE',
@@ -64,19 +61,18 @@ class _HomeFooterState extends State<HomeFooter> {
               valueFontSize: 25.0,
               toggleSize: 45.0,
               value: model.activeGameLeaderBoardStatus,
-
               borderRadius: 12.0,
               padding: 10.0,
               showOnOff: true,
-              //Funtion to run on toggle
 
+              //Funtion to run on toggle
               onToggle: (val) {
                 setState(
                   () {
                     status = val;
                     // print(status);
                     model.activateOrDeactivateGameLeaderBoardScreen(
-                      gameIndex: model.currentGameIndex,
+                      gameId: model.currentGameId,
                       activateGameLeaderBoard: status,
                     );
                   },

@@ -15,7 +15,8 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
-    int currentGameIndex = Provider.of<Game>(context).currentGameIndex;
+    int currentgameid = Provider.of<Game>(context).currentGameId;
+    Provider.of<Game>(context, listen: false).activeGameName(currentgameid);
     var model = Provider.of<Game>(context);
 
     return Container(
@@ -38,16 +39,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ),
             ],
           ),
-
-          ///BODY
-          /// change homepage background
-          // ElevatedButton(
-          //   onPressed: () async {
-          //     await getImagePath();
-          //     setState(() {});
-          //   },
-          //   child: Text('Change Background'),
-          // ),
           const SizedBox(height: 40),
 
           //Change Game Name
@@ -93,26 +84,21 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           width: 400,
                           child: TextField(
                             style: bodyTextStyle(),
-
-                            // keyboardType: TextInputType.multiline,
-                            // maxLines: null,
-                            onChanged: (value) {
+                            onChanged: (value) async {
                               String nameValue;
                               if (value.isNotEmpty) {
                                 nameValue = value.toString();
                               } else {
                                 nameValue = 'curtis game';
                               }
-                              model.changeGameName(
-                                gameIndex: currentGameIndex,
-                                gamename: nameValue,
+                              await model.changeGameName(
+                                gameId: currentgameid,
+                                gamename: nameValue.toUpperCase(),
                               );
                             },
                             controller: TextEditingController.fromValue(
                               TextEditingValue(
-                                text:
-                                    // '${model.contestingList[index].name}',
-                                    model.activegamename,
+                                text: model.activegamename,
                                 selection: TextSelection.collapsed(
                                   offset: model.activegamename.length,
                                 ),
@@ -130,7 +116,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  // color: Color(0xff2940D3),
                                   width: 1.5,
                                 ),
                               ),
@@ -164,7 +149,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           //Upload Game Slideshow Images
           ElevatedButton(
             onPressed: () async {
-              await model.changeGameSlideshowImages(currentGameIndex);
+              await model.changeGameSlideshowImages(currentgameid);
             },
             style: ElevatedButton.styleFrom(
               primary: const Color(0xff2940D3),
@@ -184,6 +169,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               primary: Colors.red,
             ),
             onPressed: () {
+              model.logOut();
               Navigator.popAndPushNamed(context, 'login');
               // Navigator.of(context).popUntil(ModalRoute.withName("login"));
             },
@@ -194,6 +180,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ),
             ),
           ),
+
           const SizedBox(height: 45),
         ],
       ),

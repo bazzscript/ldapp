@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:ldapp/models/contestant/contestant.dart';
 import 'package:ldapp/models/game/game.dart';
 import 'package:ldapp/screens/home_screen/home_screen.dart';
 import 'package:ldapp/screens/leaderboard_screen/leaderboard_screen.dart';
-
 import 'package:ldapp/utils/svg_codes.dart';
 import 'package:ldapp/widgets/custom_button.dart';
 import 'package:ldapp/widgets/custom_text_styles.dart';
@@ -19,15 +17,14 @@ class HeaderButtons extends StatelessWidget {
   //ADD NEW CONTESTANT MODAL / DAILOUGE WINDOW
   addnewContestantDailogue(
     BuildContext context,
-    // String action,
-    // [int? index]
   ) {
     showDialog(
-        context: context,
-        barrierLabel: 'ADD NEW CONTESTANT',
-        barrierColor: Colors.black.withOpacity(0.7),
-        builder: (context) {
-          return Consumer<Game>(builder: (context, model, child) {
+      context: context,
+      barrierLabel: 'ADD NEW CONTESTANT',
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (context) {
+        return Consumer<Game>(
+          builder: (context, model, child) {
             return Dialog(
               child: Container(
                 // height: 300,
@@ -58,23 +55,26 @@ class HeaderButtons extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 20),
+
+                      //ADD AND CANCEL BUTTONS
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
+                          //ADD NEW CONTESTANT BUTTON
                           Material(
                             color: Colors.transparent,
                             child: IconButton(
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  /// Adds New Contestant To the hive Database
-                                  model.addNewGameContestant(
-                                      gameIndex: model.currentGameIndex,
-                                      contestant: Contestant(
-                                        name: _nameController!.text,
-                                      ));
+                                  // Adds New Contestant To the Database
 
+                                  await model.addNewGameContestant(
+                                    gameId: model.currentGameId,
+                                    contestant: Contestant(
+                                      name: _nameController!.text,
+                                    ),
+                                  );
                                   _nameController!.clear();
-
                                   Navigator.pop(context);
                                 }
                               },
@@ -84,6 +84,8 @@ class HeaderButtons extends StatelessWidget {
                               splashColor: Colors.greenAccent,
                             ),
                           ),
+
+                          //CANCEL BUTTON
                           Material(
                             color: Colors.transparent,
                             child: IconButton(
@@ -103,8 +105,10 @@ class HeaderButtons extends StatelessWidget {
                 ),
               ),
             );
-          });
-        });
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -112,10 +116,12 @@ class HeaderButtons extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+
+      //THE TWO HEADER BUTTONS, LEADERBOARD AND ADD NEW CONTESTANT
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Adds New Contestants
+          // Adds New Contestants Button
           CustomButton(
             name: 'Add Contestant',
             textColor: Colors.white,
@@ -125,25 +131,33 @@ class HeaderButtons extends StatelessWidget {
               addnewContestantDailogue(context);
             },
           ),
-          // const SizedBox(width: 40),
 
-          // const SizedBox(width: 40),
-
-          // Button to LeaderBoards Screen
+          // Button that leads to LeaderBoards Screen
           CustomButton(
             name: 'LeaderBoard',
             svgIconCode: leaderBoardIcon,
-            onPressed: () {
+            onPressed: () async {
+              // Get Current Game Id
+              int currentgameid = Provider.of<Game>(
+                context,
+                listen: false,
+              ).currentGameId;
+
+              // Get List Of Images
+              await Provider.of<Game>(
+                context,
+                listen: false,
+              ).getGameSlideshowImages(currentgameid);
+
+              // move to the next Screen , Which iS the SlideShow Screen
               Navigator.push(
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeftJoined,
                   child: const LeaderBoardScreen(),
                   childCurrent: const HomeScreen(),
-                  // duration: const Duration(seconds: 1),
                 ),
               );
-              // Navigator.pushNamed(context, 'leaderboard');
             },
           )
         ],

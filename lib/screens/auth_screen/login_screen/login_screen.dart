@@ -2,13 +2,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ldapp/models/game/game.dart';
-
 import 'package:ldapp/utils/appcolors.dart';
 import 'package:ldapp/utils/svg_codes.dart';
 import 'package:ldapp/utils/utilfunction.dart';
 import 'package:ldapp/widgets/custom_button.dart';
 import 'package:ldapp/widgets/custom_window_bar.dart';
-
 import 'package:provider/provider.dart';
 
 class LoginToGameScreen extends StatefulWidget {
@@ -20,8 +18,8 @@ class LoginToGameScreen extends StatefulWidget {
 
 class _LoginToGameScreenState extends State<LoginToGameScreen> {
   final TextEditingController? _gameNameController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -33,9 +31,6 @@ class _LoginToGameScreenState extends State<LoginToGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // context.watch<Game>().getGameList();
-    // var _gamesList = context.select((Game p) => p.gamesList);
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SizedBox(
@@ -83,8 +78,6 @@ class _LoginToGameScreenState extends State<LoginToGameScreen> {
                                       fontFamily: 'MineCraft',
                                       letterSpacing: 3,
                                     ),
-                                    // maxLines: null,
-                                    // expands: true,
                                     textAlignVertical: TextAlignVertical.center,
                                     controller: _gameNameController,
                                     validator: (value) {
@@ -97,7 +90,8 @@ class _LoginToGameScreenState extends State<LoginToGameScreen> {
                                       }
                                       return null;
                                     },
-                                    inputFormatters: const <TextInputFormatter>[
+                                    inputFormatters: <TextInputFormatter>[
+                                      UpperCaseTextFormatter(),
                                       // LengthLimitingTextInputFormatter(20),
                                     ],
                                     cursorColor: AppColors.decorationColor1,
@@ -152,36 +146,19 @@ class _LoginToGameScreenState extends State<LoginToGameScreen> {
                                     name: 'LOGIN TO GAME',
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        var gameName =
-                                            _gameNameController!.text;
-                                        int activeGameIndex =
-                                            _gameList.indexWhere(
-                                          (element) =>
-                                              element.gamename == gameName,
-                                        );
-                                        model.currentGameIndex =
-                                            activeGameIndex;
+                                        var gameName = _gameNameController!.text
+                                            .toUpperCase();
+                                        //Get current game id
+
+                                        var gameId = getGameIdGivenGameName(
+                                            _gameList, gameName);
+
+                                        int activeGameId = gameId;
+                                        model.currentGameId = activeGameId;
                                         _gameNameController!.clear();
 
                                         Navigator.popAndPushNamed(
                                             context, 'home');
-                                        // Navigator.of(context).push(
-                                        //   MaterialPageRoute(
-                                        //     settings:
-                                        //         RouteSettings(name: "HOME"),
-                                        //     builder: (context) => HomeScreen(),
-                                        //   ),
-                                        // );
-                                        // Navigator.push(
-                                        //   context,
-                                        //   PageTransition(
-                                        //     type: PageTransitionType.rotate,
-                                        //     child: const HomeScreen(),
-                                        //     childCurrent: LoginToGameScreen(),
-                                        //     duration:
-                                        //         const Duration(seconds: 1),
-                                        //   ),
-                                        // );
                                       }
                                     },
                                     svgIconCode: loginToGameIcon,
@@ -198,16 +175,6 @@ class _LoginToGameScreenState extends State<LoginToGameScreen> {
                                   onTap: () {
                                     Navigator.popAndPushNamed(
                                         context, 'create');
-
-                                    // Navigator.push(
-                                    //   context,
-                                    //   PageTransition(
-                                    //     type: PageTransitionType.scale,
-                                    //     child: const CreateNewGameScreen(),
-                                    //     childCurrent: const LoginToGameScreen(),
-                                    //     // duration: const Duration(seconds: 1),
-                                    //   ),
-                                    // );
                                   },
                                   child: const Text(
                                     'Create New Game Instead',
@@ -233,6 +200,17 @@ class _LoginToGameScreenState extends State<LoginToGameScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }

@@ -1,40 +1,25 @@
-class Util {
-//   setGameHomeBackgroundImage() async {;
-//   FilePickerResult? result = await FilePicker.platform.pickFiles(
-//     type: FileType.custom,
-//     allowedExtensions: ['jpg', 'png'],
-//   );
+import 'dart:math';
 
-//   if (result != null) {
-//     games!.gameHomeBackgroundImage = result.files.single.path!;
-//     box.putAt(1, games);
-//     print(games);
-//     print('successfully added picked image file path');
-//   } else {
-//     print('null');
-//     return 'null';
-//   }
+class Util {}
 
-// }
-// getImagePath() async {
-//   FilePickerResult? result = await FilePicker.platform.pickFiles(
-//     type: FileType.custom,
-//     allowedExtensions: ['jpg', 'png'],
-//   );
-//   return result!.files.single.path!;
-// //   if (result != null) {
-// //     return result.files.single.path!;
-// //   } else {
-// //     return null;
-// //   }
-// // }
+bool checkifGameNameExists(List gamelist, String gamename) {
+  for (var i = 0; i < gamelist.length; i++) {
+    if (gamelist[i].gamename == gamename) {
+      return true;
+    }
+  }
+  return false;
 }
 
-bool checkifGameNameExists(List gamelist, String gameName) {
-  int gameIndex = gamelist.indexWhere((game) => game.gamename == gameName);
-  if (gameIndex >= 0) {
-    return true;
-  } else {
-    return false;
+getGameIdGivenGameName(List gamelist, String gamename) {
+  for (var i = 0; i < gamelist.length; i++) {
+    if (gamelist[i].gamename == gamename) {
+      return gamelist[i].gameid;
+    }
   }
+  return null;
+}
+
+int randomNumberGenerator(int min, int max) {
+  return min + Random().nextInt(max - min);
 }
