@@ -57,5 +57,25 @@ Windows 10 SDK (10.0.17763.0)
 then run one of the following command, depending on the platform you are using
 4- flutter build windows | flutter build linux | flutter build MacOs
 
+DESKTOP SCREENSHOTS
 
-You can Open Multiple Instances of the Application, Simply Open The Application as many times as you want.
+#LOG IN
+1
+
+#SIGN UP
+2
+
+#SIDE MENU
+3
+
+#INPUT CONTESTANT SCORES SCREEN
+4
+5
+7
+
+#FINAL LEADERBOARD SCREEN
+6
+
+
+
+

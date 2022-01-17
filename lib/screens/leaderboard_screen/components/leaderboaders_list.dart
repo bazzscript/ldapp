@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ldapp/models/contestant/contestant.dart';
 import 'package:ldapp/models/game/game.dart';
 import 'package:ldapp/utils/appcolors.dart';
 import 'package:provider/provider.dart';
@@ -11,24 +12,48 @@ class LeaderBoardersList extends StatelessWidget {
     int currentGameId = Provider.of<Game>(context).currentGameId;
     //Function To Get List Of Contestants
 
-    return Consumer<Game>(builder: (context, model, child) {
-      model.getSortedGameContestantsList(currentGameId);
-      return Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40),
-        child: ListView.builder(
-            itemCount: model.sortedContestantsList.length,
-            itemBuilder: (_, index) {
+// Listen to the stream from sortedContestantsStream
+    return StreamBuilder<List<Contestant>>(
+      stream: Provider.of<Game>(context).sortedContestantsStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
               return LeaderBoardTile(
+                isOnFire: snapshot.data![index].isContestantOnFire,
                 index: index,
-                name: model.sortedContestantsList[index].name,
+                name: snapshot.data![index].name,
                 position: index + 1,
-                score: model.sortedContestantsList[index].totalScore,
+                score: snapshot.data![index].totalScore,
               );
-            }),
-      );
-    });
+            },
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+    // return Consumer<Game>(builder: (context, model, child) {
+    //   model.getSortedGameContestantsList(currentGameId);
+    //   return Container(
+    //     width: MediaQuery.of(context).size.width,
+    //     height: MediaQuery.of(context).size.height,
+    //     padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40),
+    //     child: ListView.builder(
+    //         itemCount: model.sortedContestantsList.length,
+    //         itemBuilder: (_, index) {
+    //           return LeaderBoardTile(
+    //             index: index,
+    //             name: model.sortedContestantsList[index].name,
+    //             position: index + 1,
+    //             score: model.sortedContestantsList[index].totalScore,
+    //           );
+    //         }),
+    //   );
+    // });
   }
 }
 
@@ -37,6 +62,7 @@ class LeaderBoardTile extends StatelessWidget {
   final int position;
   final int score;
   final int index;
+  final bool isOnFire;
 
   const LeaderBoardTile({
     Key? key,
@@ -44,14 +70,14 @@ class LeaderBoardTile extends StatelessWidget {
     required this.position,
     required this.score,
     required this.index,
+    required this.isOnFire,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    ///Check if contestant is on fire
-    bool isThisContestantOnFire = Provider.of<Game>(context)
-        .sortedContestantsList[index]
-        .isContestantOnFire;
+    // Check if contestant is on fire from sortedContestantsStream Stream
+
+    bool isThisContestantOnFire = true;
 
     Color secondaryColorAppColor1 = position != 1
         ? AppColors.secondaryAppColor1

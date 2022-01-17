@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:ldapp/core/database.dart';
@@ -276,32 +278,57 @@ class Game extends ChangeNotifier {
     notifyListeners();
   }
 
-  ///Get A Sorted List Of All Game Contestants
-  ///This is best suited for the leaderboard screen
-  ///This is Sorted based on totalscore
-  List _sortedContestantsList = <Contestant>[];
-  List get sortedContestantsList => _sortedContestantsList;
+  // Create A Stream That Gets A list of all the contestants
+  Stream<List<Contestant>> get sortedContestantsStream =>
+      _sortedContestantsListController.stream;
+  final _sortedContestantsListController = StreamController<List<Contestant>>();
+
+  // Get All Contestants
   getSortedGameContestantsList(int gameId) async {
+    //Get the database
     var db = await dbConnection.getDatabase();
+
+    //Get the game collection
     var gameCollection = await db.collection(_collectionName);
+
+    //Get the Game Given The Game Id, And Add The New Contestant
     var game = await gameCollection.findOne(where.eq('gameid', gameId));
     Game gameObj = Game();
     await gameObj.fromJson(game);
-    Contestant contestant = Contestant();
-    var gclist = await gameObj.gameContestants
-        .map((e) => contestant.fromJson(e))
-        .toList();
 
-    List<dynamic> contestants = gclist;
-
-    // sort list of contestant based on thier totalscore
-    contestants.sort((a, b) => b.totalScore.compareTo(a.totalScore));
-    _sortedContestantsList = contestants;
-
+    //Sort the by thier total Score
+    gameObj.gameContestants
+        .sort((a, b) => b.totalScore.compareTo(a.totalScore));
+    _sortedContestantsListController.sink.add(gameObj.gameContestants);
     logOut();
-
-    notifyListeners();
   }
+
+  ///Get A Sorted List Of All Game Contestants
+  ///This is best suited for the leaderboard screen
+  ///This is Sorted based on totalscore
+  // List _sortedContestantsList = <Contestant>[];
+  // List get sortedContestantsList => _sortedContestantsList;
+  // getSortedGameContestantsList(int gameId) async {
+  //   var db = await dbConnection.getDatabase();
+  //   var gameCollection = await db.collection(_collectionName);
+  //   var game = await gameCollection.findOne(where.eq('gameid', gameId));
+  //   Game gameObj = Game();
+  //   await gameObj.fromJson(game);
+  //   Contestant contestant = Contestant();
+  //   var gclist = await gameObj.gameContestants
+  //       .map((e) => contestant.fromJson(e))
+  //       .toList();
+
+  //   List<dynamic> contestants = gclist;
+
+  //   // sort list of contestant based on thier totalscore
+  //   contestants.sort((a, b) => b.totalScore.compareTo(a.totalScore));
+  //   _sortedContestantsList = contestants;
+
+  //   logOut();
+
+  //   notifyListeners();
+  // }
 
   /// et unsorted List Of All Game Contestants
   /// This is tailored for the home screen
