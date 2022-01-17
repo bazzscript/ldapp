@@ -1,26 +1,6 @@
 # Project: ldapp
 
-A new Flutter Desktop project.
-
-# Owner : Curtis
-
-
-Repository:
-
-[https://github.com/bazzscript/ldapp]: # Repository:
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter,
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+A Flutter Desktop project.
 
 
 ## TO RUN THIS PROJECT
@@ -61,20 +41,22 @@ DESKTOP SCREENSHOTS
 
 #LOG IN
 1
+![DESKTOP DEVELOPMENT LAPTOP FULL SCREENSHOT](https://github.com/bazzscript/ldapp/blob/master/screenshots/1.png)
 
 #SIGN UP
 2
+![DESKTOP DEVELOPMENT LAPTOP FULL SCREENSHOT](https://github.com/bazzscript/ldapp/blob/master/screenshots/2.png)
 
 #SIDE MENU
 3
-
+![DESKTOP DEVELOPMENT LAPTOP FULL SCREENSHOT](https://github.com/bazzscript/ldapp/blob/master/screenshots/3.png)
 #INPUT CONTESTANT SCORES SCREEN
-4
-5
-7
+![DESKTOP DEVELOPMENT LAPTOP FULL SCREENSHOT](https://github.com/bazzscript/ldapp/blob/master/screenshots/4.png)
+![DESKTOP DEVELOPMENT LAPTOP FULL SCREENSHOT](https://github.com/bazzscript/ldapp/blob/master/screenshots/5.png)
+![DESKTOP DEVELOPMENT LAPTOP FULL SCREENSHOT](https://github.com/bazzscript/ldapp/blob/master/screenshots/7.png)
 
 #FINAL LEADERBOARD SCREEN
-6
+![DESKTOP DEVELOPMENT LAPTOP FULL SCREENSHOT](https://github.com/bazzscript/ldapp/blob/master/screenshots/6.png)
 
 
 
